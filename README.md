@@ -1,66 +1,164 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Translation Management System
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## Overview
 
-## About Laravel
+The Translation Management System (TMS) is designed to streamline the management of translations across various modules within an application. It offers a robust interface for managing languages, tags, and translation entries, making it easier to perform CRUD (Create, Read, Update, Delete) operations on translation data. The system also provides APIs to enable users to interact with translations, perform searches, and export data.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Setup Instructions
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+### 1. Clone the Repository
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+Start by cloning the repository to your local machine:
 
-## Learning Laravel
+```bash
+git clone https://github.com/erratickhan0/translation-mgt.git
+cd translation-mgt
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+2. Install Dependencies
+Once inside the project directory, run the following commands to install the required dependencies:
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+composer install
+npm install
+cp .env.example .env
+php artisan key:generate
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+3. Set Up Environment Variables
+Ensure the environment variables are set correctly and proceed with database migrations and seeding:
+php artisan migrate
+php artisan db:seed
 
-## Laravel Sponsors
+4. Build the Front-End Assets
+Compile the front-end assets using Vite:
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+npm run build
 
-### Premium Partners
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+5. Run the command to generate translation records
 
-## Contributing
+php artisan populate:translations count=100000
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+After initial setup of Project.
+Example Axios API Calls
+You can execute the following Axios API calls directly from your browser’s console or integrate them into your front-end application.
+ Ensure to replace your_generated_token with the actual token obtained after successful login.
+ These API calls will demonstrate how to interact with the Translation Management System via its API.
 
-## Code of Conduct
+-----------------------------------------------------------------------------------------------------------------
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+1. Login - Obtain an API token
+Authenticate the user and store the access token for future requests:
 
-## Security Vulnerabilities
+window.axios.post('api/login', {
+  email: 'user@example.com',
+  password: 'password'
+})
+.then(response => {
+  localStorage.setItem('token', response.data.access_token);
+})
+.catch(error => {
+  console.error(error);
+});
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
 
-## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+-----------------------------------------------------------------------------------------------------------------
+
+2. Search Translation - Search a  translation
+
+// Example of searching for translations
+window.axios.get('api/translations/search', {
+  params: {
+    query: 'Welcome',  // Search term
+    tag: 'web'     // Optional tag slug for filtering (if any)
+  },
+  headers: {
+    'Accept': 'application/json',
+    'Content-Type': 'application/json',
+    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content') // Only for web routes
+  }
+})
+.then(response => {
+  console.log('Search Results:', response.data);  // Handle search results
+})
+.catch(error => {
+  console.error('Error searching translations:', error.response?.data || error.message);  // Handle error
+});
+
+
+-----------------------------------------------------------------------------------------------------------------
+
+
+3. View a single translation
+window.axios.get('api/translations/1', {
+  headers: {
+    Authorization: 'Bearer ' + localStorage.getItem('token')
+  }
+})
+.then(response => {
+  console.log(response.data);
+})
+.catch(error => {
+  console.error(error);
+});
+
+-----------------------------------------------------------------------------------------------------------------
+
+
+4.Create a new translation
+window.axios.post('api/translations', {
+  language_id: 1,
+  tag_id: 1,
+  value: 'Welcome to the site!',
+    key:'welcome_to_site'
+}, {
+  headers: {
+    'Accept': 'application/json',
+    'Content-Type': 'application/json',
+    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content') // Only for web routes
+  }
+})
+.then(response => {
+  console.log('Translation stored:', response.data);
+})
+.catch(error => {
+  console.error('Error storing translation:', error.response?.data || error.message);
+});
+
+-----------------------------------------------------------------------------------------------------------------
+
+5.Update a single translation
+window.axios.put('api/translations/1', {
+  language_id: 1,
+  tag_id: 1,
+  value: 'Welcome to the site update!!'
+}, {
+  headers: {
+    'Accept': 'application/json',
+    'Content-Type': 'application/json',
+    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content') // Only for web routes
+  }
+})
+.then(response => {
+  console.log('Translation stored:', response.data);
+})
+.catch(error => {
+  console.error('Error storing translation:', error.response?.data || error.message);
+});
+
+-----------------------------------------------------------------------------------------------------------------
+
+6. Export Translations - Export translations to a file
+To export all translations in a desired format (such as CSV, JSON), you can use the following API:
+
+window.axios.get('api/translations/export', {
+  headers: {
+    Authorization: 'Bearer ' + localStorage.getItem('token')
+  }
+})
+.then(response => {
+  // Handle file download or display export result
+  console.log(response.data);
+})
+.catch(error => {
+  console.error(error);
+});

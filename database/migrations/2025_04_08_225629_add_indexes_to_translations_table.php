@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::table('translations', function (Blueprint $table) {
             $table->index('key');
-            $table->index('value');
+            $table->fullText('value');
         });
     }
 
